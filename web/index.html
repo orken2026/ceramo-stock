@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>Қойма қалдығы</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preload" href="/fonts/geologica-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="bar">
+    <form id="search" class="search" role="search" autocomplete="off">
+      <label class="sr-only" for="q">Артикул немесе тауар атауы</label>
+      <input id="q" type="search" enterkeyhint="search" maxlength="64"
+             autocapitalize="off" autocorrect="off" spellcheck="false"
+             placeholder="Артикул немесе атауы">
+      <button type="submit" aria-label="Іздеу">
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/>
+          <path d="m15.5 15.5 5 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </form>
+  </header>
+  <main id="view" aria-live="polite"></main>
+</body>
+</html>
