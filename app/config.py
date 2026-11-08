@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import re
 from dataclasses import dataclass
 
 from dotenv import load_dotenv
@@ -84,11 +85,42 @@ def load_onec_settings() -> OneCSettings:
     )
 
 
+BOT_TOKEN_RE = re.compile(r"^\d+:[A-Za-z0-9_-]{30,}$")
+REQUIRED = ("BOT_TOKEN", "ADMIN_TELEGRAM_ID", "ONEC_ODATA_URL", "ONEC_USER", "ONEC_PASSWORD")
+
+
+def _public_url() -> str:
+    """PUBLIC_URL wins when valid; on Render the service's own address is the fallback."""
+    for name in ("PUBLIC_URL", "RENDER_EXTERNAL_URL"):
+        value = os.environ.get(name, "").strip().rstrip("/")
+        if value.startswith("https://"):
+            return value
+    return ""
+
+
+def environment_problems() -> list[str]:
+    """Every configuration problem at once, naming variables but never printing their values."""
+    problems = [f"{name} is not set" for name in REQUIRED if not os.environ.get(name, "").strip()]
+    token = os.environ.get("BOT_TOKEN", "").strip()
+    if token and not BOT_TOKEN_RE.match(token):
+        problems.append("BOT_TOKEN does not look like a token from @BotFather")
+    admin = os.environ.get("ADMIN_TELEGRAM_ID", "").strip()
+    if admin and not admin.isdigit():
+        problems.append("ADMIN_TELEGRAM_ID must be a number")
+    odata = os.environ.get("ONEC_ODATA_URL", "").strip()
+    if odata and not odata.startswith("https://"):
+        problems.append("ONEC_ODATA_URL must start with https://")
+    if not _public_url():
+        problems.append("PUBLIC_URL must start with https://")
+    return problems
+
+
 def load_settings() -> Settings:
     load_dotenv()
-    public_url = _required("PUBLIC_URL").rstrip("/")
-    if not public_url.startswith("https://"):
-        raise ConfigError("PUBLIC_URL must start with https://")
+    problems = environment_problems()
+    if problems:
+        raise ConfigError("; ".join(problems))
+    public_url = _public_url()
     try:
         admin_id = int(_required("ADMIN_TELEGRAM_ID"))
     except ValueError as exc:
