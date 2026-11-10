@@ -1,0 +1,15 @@
+# Render-дегі баптау (анықтама үшін). Сервис: тегін web service, Docker, Франкфурт.
+services:
+  - type: web
+    name: ceramo-sales-bot
+    runtime: docker
+    plan: free
+    region: frankfurt
+    healthCheckPath: /healthz
+    envVars:
+      - key: BOT_TOKEN        # @BotFather берген токен
+        sync: false
+      - key: ADMIN_IDS        # иесінің Telegram ID-і
+        sync: false
+      - key: OWNER_CODE       # иесі болуға арналған құпия сілтеме коды
+        generateValue: true
